@@ -21,7 +21,7 @@ namespace VMFParser
         /// <summary>Initializes a new instance of the <see cref="VBlock"/> class from VMF text.</summary>
         public VBlock(string[] text)
         {
-            Name = text[0].Trim();
+            Name = text[0].Trim('"').Trim();
             Body = Utils.ParseToBody(text.SubArray(2, text.Length - 3));
         }
 
@@ -32,7 +32,7 @@ namespace VMFParser
             var text = Utils.BodyToString(Body);
             if (useTabs)
                 text = text.Select(t => t.Insert(0, "\t")).ToList();
-            text.Insert(0, Name);
+            text.Insert(0, $"\"{Name}\"");
             text.Insert(1, "{");
             text.Add("}");
             return text.ToArray();
