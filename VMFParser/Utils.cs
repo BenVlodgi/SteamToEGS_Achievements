@@ -6,9 +6,9 @@ namespace VMFParser
 {
     internal static class Utils
     {
-        internal static Type GetNodeType(string line)
+        internal static Type GetNodeType(string line, string nextLine = "")
         {
-            return line.Trim().StartsWith("\"") ? typeof(VProperty) : typeof(VBlock);
+            return line.Trim().EndsWith("{") || nextLine.Trim().StartsWith("{") ? typeof(VBlock) : typeof(VProperty);
         }
 
         internal static IList<IVNode> ParseToBody(string[] body)
@@ -20,6 +20,7 @@ namespace VMFParser
             for (int i = 0; i < body.Length; i++)
             {
                 var line = body[i].Trim();
+                var nextLine = i+1 < body.Length ? body[i+1].Trim() : "";
 
                 if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//"))
                     continue;
@@ -30,7 +31,7 @@ namespace VMFParser
                     depth++;
 
                 if (depth == 0)
-                    if (Utils.GetNodeType(line) == typeof(VProperty))
+                    if (Utils.GetNodeType(line, nextLine) == typeof(VProperty))
                         newBody.Add(new VProperty(line));
                     else
                     {
